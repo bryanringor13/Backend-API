@@ -1,27 +1,27 @@
 # Backend-API
 Backend API in Nodejs Express CRUD
-
-How to run:
+<br />
+How to run:<br />
 Make sure you already install node, npm and mongodb service in your machine before install and run the application.
-
-Recommended:
-Yarn version: 1 and up.
-Node version: 16 and up.
-NPM version: 8 and up.
-
+<br />
+Recommended:<br />
+Yarn version: 1 and up.<br />
+Node version: 16 and up.<br />
+NPM version: 8 and up.<br />
+<br />
 1. yarn install
 2. yarn start
 3. create .env.dev
-
+<br />
 put info below in .env.dev:<br />
-NODE_ENV=development
-PORT=5001
-DB_USER=<database username>
-DB_PASSWORD=<database user password>
-DB_NAME=<database name>
-ADMIN_DB_NAME=<database admin name>
-DB_SERVERS="<database username>:<database user password>@localhost:27017"
-CORS_ORIGIN="localhost:27017"
-
-TOKEN_KEY=<create your own token key for test purposes only>
-TOKEN_XPRY=15m
+NODE_ENV=development<br />
+PORT=5001<br />
+DB_USER=<database username><br />
+DB_PASSWORD=<database user password><br />
+DB_NAME=<database name><br />
+ADMIN_DB_NAME=<database admin name><br />
+DB_SERVERS="<database username>:<database user password>@localhost:27017"<br />
+CORS_ORIGIN="localhost:27017"<br />
+<br />
+TOKEN_KEY=<create your own token key for test purposes only><br />
+TOKEN_XPRY=15m<br />
