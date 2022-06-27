@@ -13,7 +13,7 @@ NPM version: 8 and up.
 2. yarn start
 3. create .env.dev
 
-put info below in .env.dev:\n
+put info below in .env.dev:<br />
 NODE_ENV=development
 PORT=5001
 DB_USER=<database username>
