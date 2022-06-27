@@ -22,6 +22,5 @@ DB_NAME=<database name><br />
 ADMIN_DB_NAME=<database admin name><br />
 DB_SERVERS="<database username>:<database user password>@localhost:27017"<br />
 CORS_ORIGIN="localhost:27017"<br />
-<br /><br />
 TOKEN_KEY=<create your own token key for test purposes only><br />
 TOKEN_XPRY=15m<br />
