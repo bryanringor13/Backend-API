@@ -25,8 +25,10 @@ const envVarsSchema = Joi.object()
       .default('test'),
     DB_SERVERS: Joi.string(),
     CORS_ORIGIN: Joi.string(),
-    TOKEN_KEY: Joi.string(),
-    TOKEN_XPRY: Joi.string()
+    TOKEN_KEY: Joi.string().default('private-key-for-token-api'),
+    REFRESH_TOKEN_KEY: Joi.string().default('private-key-for-refresh-token-api'),
+    TOKEN_XPRY: Joi.string().default('10m'),
+    REFRESH_TOKEN_XPRY: Joi.string().default('1h'),
   })
   .unknown()
 
@@ -56,6 +58,8 @@ export default {
     },
     origin: corsOrigin,
     tokenKey: envVars.TOKEN_KEY,
-    tokenXpry: envVars.TOKEN_XPRY
+    refreshTokenKey: envVars.REFRESH_TOKEN_KEY,
+    tokenXpry: envVars.TOKEN_XPRY,
+    refreshTokenXpry: envVars.REFRESH_TOKEN_XPRY
   }
   

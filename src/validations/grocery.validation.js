@@ -5,7 +5,7 @@ const create = {
         name: Joi.string()
         .required(),
         category: Joi.string().required(),
-        price: Joi.string().required(),
+        price: Joi.number().required(),
     })
 }
 
@@ -20,18 +20,16 @@ const groceryInfo = {
 
 const updateInfo = {
     body: Joi.object().keys({
+        id: Joi.string()
+          .required(),
         name: Joi.string(),
         category: Joi.string(),
-        price: Joi.string()
-    }),
-    params: Joi.object().keys({
-      id: Joi.string()
-        .required()
+        price: Joi.number()
     })
 }
 
 const deleteInfo = {
-    params: Joi.object().keys({
+    body: Joi.object().keys({
       id: Joi.string()
         .required()
     })

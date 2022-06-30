@@ -9,7 +9,6 @@ import httpStatus from 'http-status'
 
 import config from './config'
 import { errorHandler } from './middlewares/error'
-import ApiError from './utils/ApiError'
 
 import { configureServices } from './services'
 import { configureControllers } from './controllers'
@@ -31,15 +30,13 @@ export default ({ models }) => {
   const Services = configureServices(models)
   const Controllers = configureControllers(Services)
   const { router } = configureRoutes(
-    {},
+    models,
     Controllers
   )
 
-  app.use('/api', router)
+  app.use('', router)
 
-  app.use((req, res, next) => {
-    next(new ApiError(httpStatus.NOT_FOUND, 'Not found'))
-  })
+  app.use((req, res, next) => res.status(httpStatus.NOT_FOUND).send({ message: 'Not found' }))
 
   app.use(errorHandler)
 

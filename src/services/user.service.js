@@ -1,28 +1,66 @@
 import httpStatus from 'http-status'
 import bcrypt from 'bcrypt'
-import { v4 as uuidv4 } from 'uuid'
+import mongoose from 'mongoose'
 import ApiError from '../utils/ApiError'
 import { catchMongooseError } from '../utils/errorHandling'
-import { token } from '../utils/tokenHandling'
+import { logoutToken, refToken, token as UTILToken, verifyRefreshToken } from '../utils/tokenHandling'
 import { getDate } from '../utils'
 
 export default ({ Users }) => {
-    // const date = getDate();
     return {
-        login: async ( body ) => {
-            const { email, password } = body;
-            if (!email && !password) throw new ApiError(httpStatus.BAD_REQUEST, 'All input is required');
-            const user = await Users.findOne({ email }).catch(catchMongooseError);
-            
-            if(user && (await bcrypt.compare(password, user.password))) {
-                const response = user.toObject();
-                response.token = token(user);
-                delete response.password;
+        newToken: async ( body ) => {
+            try {
+                const { token } = body;
+                if (!token) throw new ApiError(httpStatus.BAD_REQUEST, 'Token is required');
+    
+                const verified = verifyRefreshToken(token)
+                if(verified) {
+                    const email = verified.email;
+                    const user = await Users.findOne({ email }).catch(catchMongooseError);
+                    if(!user) throw new ApiError(httpStatus.BAD_REQUEST, 'User is no longer exist');
+                    const { _id } = user.toObject();
+                    const accessToken = UTILToken(user);
 
-                return response;
+                    await Users.findOneAndUpdate({ _id },{
+                            accessToken,
+                            updatedAt: getDate()
+                        })
+                    return { accessToken };
+                };
+            } catch (error) {
+                return catchMongooseError(error);
             }
+        },
+        login: async ( body ) => {
+            try {
+                const { email, password } = body;
+                if (!email && !password) throw new ApiError(httpStatus.BAD_REQUEST, 'All input is required');
+                const user = await Users.findOne({ email }).catch(catchMongooseError);
+                
+                if(user && (await bcrypt.compare(password, user.password))) {
+                    const { permissionLevel, _id, firstName, lastName } = user.toObject();
+                    const accessToken = UTILToken(user);
+                    const refreshToken = refToken(user);
 
-            throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid user credentials');
+                    await Users.findOneAndUpdate({ _id },{
+                            accessToken,
+                            refreshToken,
+                            updatedAt: getDate()
+                        })
+    
+                    return {
+                        accessToken,
+                        refreshToken,
+                        name: `${firstName} ${lastName}`,
+                        userId: _id,
+                        permissionLevel
+                    };
+                }
+                
+                throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid user credentials');
+            } catch (error) {
+                return catchMongooseError(error);
+            }
         },
         register: async ( body ) => {
             try {
@@ -31,25 +69,32 @@ export default ({ Users }) => {
     
                 const oldUser = await Users.findOne({ email });
     
-                if (oldUser) throw new ApiError(httpStatus.CONFLICT, 'User already exist');
+                if (oldUser) throw new ApiError(httpStatus.CONFLICT, 'Email already exists');
     
                 const encryptedPassword = await bcrypt.hash(password, 10);
     
                 const user = await Users({
-                    _id: uuidv4(),
+                    _id: mongoose.Types.ObjectId().toString(),
                     firstName,
                     lastName,
                     email,
                     password: encryptedPassword,
                     permissionLevel,
-                    date: getDate()
+                    createdAt: getDate(),
+                    updatedAt: getDate()
                 }).save();
                 
                 const response = user.toObject();
-                response.token = token(user);
                 delete response.password;
-    
-                return response;
+                delete response.accessToken;
+                delete response.refreshToken;
+                
+                return {
+                    message: "User Created!",
+                    user: {
+                        ...response
+                    }
+                };
             } catch (error) {
                 return catchMongooseError(error);
             }
@@ -68,16 +113,52 @@ export default ({ Users }) => {
                 if(password) body.password = await bcrypt.hash(password, 10);
                 const updatedInfo = await Users.findOneAndUpdate(
                     { _id: id },
-                    body,
+                    {
+                        ...body,
+                        updatedAt: getDate()
+                    },
                     { new: true }
                 )
 
                 const response = updatedInfo.toObject();
                 delete response.password;
+                delete response.accessToken;
+                delete response.refreshToken;
 
-                return response;
+                return {
+                    message: "User Updated!",
+                    userUpdated: {
+                        ...response
+                    }
+                };
             } catch (error) {
                 return catchMongooseError(error);
+            }
+        },
+        deleteUserInfo: async (body) => {
+            try {
+                const { userId } = body;
+                const user = await Users.findOne({ _id: userId });
+                if(!user) throw new ApiError(httpStatus.BAD_REQUEST, 'No record found');
+                if (user.permissionLevel === 1) throw new ApiError(httpStatus.BAD_REQUEST, 'Admin user is not allowed to remove their account');
+                await Users.deleteOne({ _id: userId });
+            } catch (error) {
+                return catchMongooseError(error);
+            }
+        },
+        logout: async (query) => {
+            try {
+                const { id } = query;
+                const accessToken = '1';
+                const refreshToken = '1';
+
+                await Users.findOneAndUpdate({ _id: id },{
+                    accessToken,
+                    refreshToken,
+                    updatedAt: getDate()
+                })
+            } catch (error) {
+                
             }
         }
     }

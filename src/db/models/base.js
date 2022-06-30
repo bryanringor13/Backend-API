@@ -6,7 +6,12 @@ const BaseSchema = new Schema({
     type: String,
     required: true
   },
-  date: {
+  createdAt: {
+    type: Date,
+    required: true,
+    default: new Date()
+  },
+  updatedAt: {
     type: Date,
     required: true,
     default: new Date()

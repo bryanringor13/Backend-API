@@ -6,18 +6,18 @@ import groceryValidation from '../validations/grocery.validation'
 
 const router = express.Router()
 
-export default ({
+export default (Users, {
   create,
   groceryAll,
   groceryInfo,
   updateInfo,
   deleteInfo
 }) => {
-  router.route('/create').post(validate(groceryValidation.create), headers, create)
-  router.route('/').get(validate(groceryValidation.groceryAll), headers, groceryAll)
-  router.route('/:id').get(validate(groceryValidation.groceryInfo), headers, groceryInfo)
-  router.route('/:id').patch(validate(groceryValidation.updateInfo), headers, updateInfo)
-  router.route('/:id').delete(validate(groceryValidation.deleteInfo), headers, deleteInfo)
+  router.route('/').put(validate(groceryValidation.create), headers(Users), create)
+  router.route('/').get(validate(groceryValidation.groceryAll), headers(Users), groceryAll)
+  router.route('/:id').get(validate(groceryValidation.groceryInfo), headers(Users), groceryInfo)
+  router.route('/').patch(validate(groceryValidation.updateInfo), headers(Users), updateInfo)
+  router.route('/').delete(validate(groceryValidation.deleteInfo), headers(Users), deleteInfo)
 
   return router
 }

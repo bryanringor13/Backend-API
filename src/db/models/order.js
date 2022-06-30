@@ -5,13 +5,17 @@ import connectModel from '../../utils/connectModel'
 
 const { Schema } = mongoose;
 
-const GrocerySchema = new Schema(
+const OrderSchema = new Schema(
   extend(BaseSchema, {
-    name: {
+    groceryId: {
         type: String,
         required: true
     },
-    category: {
+    userId: {
+        type: String,
+        required: true
+    },
+    orderName: {
         type: String,
         required: true
     },
@@ -23,6 +27,6 @@ const GrocerySchema = new Schema(
   { versionKey: false }
 )
 
-const Grocery = conn => connectModel(conn, GrocerySchema, 'groceries')
+const Order = conn => connectModel(conn, OrderSchema, 'orders')
 
-export default Grocery
+export default Order

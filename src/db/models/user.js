@@ -29,6 +29,16 @@ const UserSchema = new Schema(
         required: true,
         enum: [1,2]
     },
+    accessToken: {
+        type: String,
+        required: true,
+        default: '1'
+    },
+    refreshToken: {
+        type: String,
+        required: true,
+        default: '1'
+    }
   }),
   { versionKey: false }
 )

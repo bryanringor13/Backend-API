@@ -1,14 +1,19 @@
 import express from 'express'
 import initUserRoute from './user.route'
 import initGroceryRoute from './grocery.route'
+import initOrderRoute from './order.route'
 
-export const configureRoutes = (deps, {
+export const configureRoutes = ({
+  Users
+}, {
   UserController,
-  GroceryController
+  GroceryController,
+  OrderController
 }) => {
   const router = express.Router()
-  router.use('/user', initUserRoute(UserController))
-  router.use('/grocery', initGroceryRoute(GroceryController))
+  router.use('', initUserRoute(Users, UserController))
+  router.use('/grocery', initGroceryRoute(Users, GroceryController))
+  router.use('/order', initOrderRoute(Users, OrderController))
 
   return { router }
 }

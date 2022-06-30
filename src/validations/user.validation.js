@@ -1,5 +1,12 @@
 import Joi from 'joi'
 
+const token = {
+  body: Joi.object().keys({
+    token: Joi.string()
+      .required()
+  })
+}
+
 const login = {
   body: Joi.object().keys({
     email: Joi.string()
@@ -37,9 +44,22 @@ const updateInfo = {
   })
 }
 
+const deleteInfo = {
+  body: Joi.object().keys({
+    userId: Joi.string()
+      .required(),
+  })
+}
+
+const logout = { }
+
+
 export default {
+  token,
   login,
   register,
   userInfo,
-  updateInfo
+  updateInfo,
+  deleteInfo,
+  logout
 }
