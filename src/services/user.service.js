@@ -65,11 +65,11 @@ export default ({ Users }) => {
         register: async ( res, body ) => {
             try {
                 const { firstName, lastName, email, password, permissionLevel } = body;
-                if (!firstName && !lastName && !email && !password && !permissionLevel) res.status(httpStatus.BAD_REQUEST).send({ message: 'All input is required' })
+                if (!firstName && !lastName && !email && !password && !permissionLevel) return res.status(httpStatus.BAD_REQUEST).send({ message: 'All input is required' })
     
                 const oldUser = await Users.findOne({ email });
     
-                if (oldUser) res.status(httpStatus.CONFLICT).send({ message: 'Email already exists' })
+                if (oldUser) return res.status(httpStatus.CONFLICT).send({ message: 'Email already exists' })
     
                 const encryptedPassword = await bcrypt.hash(password, 10);
     
