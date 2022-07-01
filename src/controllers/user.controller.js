@@ -18,7 +18,7 @@ export default ({ UserService }) => {
     })
     const register = catchAsync(async (req, res) => {
         const body = pick(req.body, ['firstName', 'lastName', 'email', 'password', 'permissionLevel']);
-        const user = await UserService.register(body)
+        const user = await UserService.register(res, body)
         res.send(user);
     })
     const updateInfo = catchAsync(async (req, res) => {
