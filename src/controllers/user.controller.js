@@ -8,7 +8,7 @@ export default ({ UserService }) => {
     })
     const login = catchAsync(async (req, res) => {
         const body = pick(req.body, ['email', 'password']);
-        const user = await UserService.login(body)
+        const user = await UserService.login(res, body)
         res.send(user)
     })
     const userInfo = catchAsync(async (req, res) => {

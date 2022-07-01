@@ -31,10 +31,10 @@ export default ({ Users }) => {
                 return catchMongooseError(error);
             }
         },
-        login: async ( body ) => {
+        login: async ( res, body ) => {
             try {
                 const { email, password } = body;
-                if (!email && !password) throw new ApiError(httpStatus.BAD_REQUEST, 'All input is required');
+                if (!email && !password) res.status(httpStatus.BAD_REQUEST).send({ message: 'All input is required' })
                 const user = await Users.findOne({ email }).catch(catchMongooseError);
                 
                 if(user && (await bcrypt.compare(password, user.password))) {
@@ -62,14 +62,14 @@ export default ({ Users }) => {
                 return catchMongooseError(error);
             }
         },
-        register: async ( body ) => {
+        register: async ( res, body ) => {
             try {
                 const { firstName, lastName, email, password, permissionLevel } = body;
-                if (!firstName && !lastName && !email && !password && !permissionLevel) throw new ApiError(httpStatus.BAD_REQUEST, 'All input is required');
+                if (!firstName && !lastName && !email && !password && !permissionLevel) res.status(httpStatus.BAD_REQUEST).send({ message: 'All input is required' })
     
                 const oldUser = await Users.findOne({ email });
     
-                if (oldUser) throw new ApiError(httpStatus.CONFLICT, 'Email already exists');
+                if (oldUser) res.status(httpStatus.CONFLICT).send({ message: 'Email already exists' })
     
                 const encryptedPassword = await bcrypt.hash(password, 10);
     
@@ -158,7 +158,7 @@ export default ({ Users }) => {
                     updatedAt: getDate()
                 })
             } catch (error) {
-                
+                return catchMongooseError(error);
             }
         }
     }
