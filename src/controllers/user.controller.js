@@ -3,7 +3,7 @@ import { catchAsync, pick } from '../utils'
 export default ({ UserService }) => {
     const token = catchAsync(async (req, res) => {
         const body = pick(req.body, ['token']);
-        const accessToken = await UserService.newToken(body)
+        const accessToken = await UserService.newToken(res, body)
         res.send(accessToken)
     })
     const login = catchAsync(async (req, res) => {
@@ -13,7 +13,7 @@ export default ({ UserService }) => {
     })
     const userInfo = catchAsync(async (req, res) => {
         const query = { id: res.locals.user_id };
-        const info = await UserService.getUserInfo(query)
+        const info = await UserService.getUserInfo(res, query)
         res.send(info)
     })
     const register = catchAsync(async (req, res) => {
@@ -24,19 +24,19 @@ export default ({ UserService }) => {
     const updateInfo = catchAsync(async (req, res) => {
         const query = { id: res.locals.user_id };
         const body = pick(req.body, ['firstName','lastName','password']);
-        const updatedInfo = await UserService.updateUserInfo(query, body)
+        const updatedInfo = await UserService.updateUserInfo(res, query, body)
         res.send(updatedInfo)
     })
     const deleteInfo = catchAsync(async (req, res) => {
         const body = pick(req.body, ['userId']);
-        await UserService.deleteUserInfo(body)
+        await UserService.deleteUserInfo(res, body)
         res.json({
             message: "User Deleted!"
         })
     })
     const logout = catchAsync(async (req, res) => {
         const query = { id: res.locals.user_id };
-        await UserService.logout(query)
+        await UserService.logout(res, query)
         res.json({
             message: "User Logout!"
         })

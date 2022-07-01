@@ -1,7 +1,6 @@
 import Joi from 'joi'
 import httpStatus from 'http-status'
 import { pick } from '../utils'
-import ApiError from '../utils/ApiError'
 import config from '../config'
 
 export const validate = schema => (req, res, next) => {
@@ -16,9 +15,10 @@ export const validate = schema => (req, res, next) => {
       const errorMessage = error.details
         .map(details => details.message)
         .join(', ')
-      return next(new ApiError(httpStatus.BAD_REQUEST, errorMessage))
+      
+      return res.status(httpStatus.BAD_REQUEST).send({ message: errorMessage });
     } else {
-      return next(new ApiError(httpStatus.BAD_REQUEST, 'Incorrect payload'))
+      return res.status(httpStatus.BAD_REQUEST).send({ message: 'Incorrect payload' });
     }
   }
   Object.assign(req, value)

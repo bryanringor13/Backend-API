@@ -1,15 +1,13 @@
 import httpStatus from 'http-status'
 import mongoose from 'mongoose'
 import { getDate } from '../utils'
-import ApiError from '../utils/ApiError'
-import { catchMongooseError } from '../utils/errorHandling'
 
 export default ({ Groceries }) => {
     return {
-        create: async ( body ) => {
+        create: async ( res, body ) => {
             try {
                 const { name, category, price } = body;
-                if (!name && !category && !price) throw new ApiError(httpStatus.BAD_REQUEST, 'All input is required');
+                if (!name && !category && !price) return res.status(httpStatus.BAD_REQUEST).send({ message: 'All input is required' });
     
                 const grocery = await Groceries({
                     ...body,
@@ -20,23 +18,31 @@ export default ({ Groceries }) => {
 
                 return grocery;
             } catch (error) {
-                return catchMongooseError(error);
+                return res.status(httpStatus.BAD_REQUEST).send({ message: error.message });
             }
         },
-        getGroceryAll: async () => {
-            const allGrocery = await Groceries.find({}).catch(catchMongooseError);
-            return allGrocery;
+        getGroceryAll: async (res) => {
+            try {
+                const allGrocery = await Groceries.find({});
+                return allGrocery;
+            } catch (error) {
+                return res.status(httpStatus.BAD_REQUEST).send({ message: error.message });
+            }
         },
-        getGroceryInfo: async (params) => {
-            const { id } = params;
-            const groceryInfo = await Groceries.findOne({ _id: id }).catch(catchMongooseError);
-            if (!groceryInfo) throw new ApiError(httpStatus.BAD_REQUEST, 'Grocery not found')
-            return groceryInfo
+        getGroceryInfo: async (res, params) => {
+            try {
+                const { id } = params;
+                const groceryInfo = await Groceries.findOne({ _id: id });
+                if (!groceryInfo) return res.status(httpStatus.BAD_REQUEST).send({ message: 'Grocery not found' });
+                return groceryInfo
+            } catch (error) {
+                return res.status(httpStatus.BAD_REQUEST).send({ message: error.message });
+            }
         },
-        updateGroceryInfo: async (body) => {
+        updateGroceryInfo: async (res, body) => {
             try {
                 const { id, name, category, price } = body;
-                if (!id && !name && !category && !price) throw new ApiError(httpStatus.BAD_REQUEST, 'No record to be changed');
+                if (!id && !name && !category && !price) return res.status(httpStatus.BAD_REQUEST).send({ message: 'No record to be changed' });
                 await Groceries.findOneAndUpdate(
                     { _id: id },
                     {
@@ -46,14 +52,18 @@ export default ({ Groceries }) => {
                     { new: true }
                 )
             } catch (error) {
-                return catchMongooseError(error);
+                return res.status(httpStatus.BAD_REQUEST).send({ message: error.message });
             }
         },
-        deleteGroceryInfo: async (body) => {
-            const { id } = body;
-            const grocery = await Groceries.findOne({ _id: id }).catch(catchMongooseError);
-            if(!grocery) throw new ApiError(httpStatus.BAD_REQUEST, 'Grocery is not existing');
-            await Groceries.deleteOne({ _id: id }).catch(catchMongooseError);
+        deleteGroceryInfo: async (res, body) => {
+            try {
+                const { id } = body;
+                const grocery = await Groceries.findOne({ _id: id });
+                if(!grocery) return res.status(httpStatus.BAD_REQUEST).send({ message: 'Grocery is not existing' });
+                await Groceries.deleteOne({ _id: id });
+            } catch (error) {
+                return res.status(httpStatus.BAD_REQUEST).send({ message: error.message });
+            }
         }
     }
 }

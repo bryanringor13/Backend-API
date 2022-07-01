@@ -1,5 +1,4 @@
 import httpStatus from 'http-status'
-import ApiError from '../utils/ApiError'
 import { verifyToken } from '../utils/tokenHandling'
 
 export const headers = (Users) => async (req, res, next) => {
@@ -16,15 +15,14 @@ export const headers = (Users) => async (req, res, next) => {
                 res.locals.token = bearerToken;
 
                 const response = await Users.findOne({ _id: user_id, accessToken: bearerToken })
-                if(!response) return next(new ApiError(httpStatus.FORBIDDEN, 'Not authorized'));
+                if(!response) return res.status(httpStatus.FORBIDDEN).send({ message: 'Not authorized' });
 
                 return next();
             };
         } catch (error) {
-            console.log(error)
-            next(new ApiError(httpStatus.FORBIDDEN, 'Not authorized'));
+            return res.status(httpStatus.FORBIDDEN).send({ message: error.message });
         }
     }
     
-    return next(new ApiError(httpStatus.FORBIDDEN, 'Authorization is required'));
+    return res.status(httpStatus.FORBIDDEN).send({ message: 'Authorization is required' });
 }
