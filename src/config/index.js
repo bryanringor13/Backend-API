@@ -20,7 +20,7 @@ const envVarsSchema = Joi.object()
     NODE_ENV: Joi.string()
       .valid('production', 'development')
       .required(),
-    PORT: Joi.number().default(5001),
+    PORT: Joi.number().default(8080),
     ADMIN_DB_NAME: Joi.string().description('admin db name'),
     DB_NAME: Joi.string().description('db name'),
     DB_USER: Joi.string().required(),
